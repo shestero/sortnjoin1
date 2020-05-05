@@ -35,13 +35,13 @@ no keys are repeating.
 ***The functions from ****StreamSort*****.**
 
 The StreamSort object/class contains the collection of useful basic
-method with such ***ordered ****streams***. As all of them are about
+method with such ***ordered streams***. As all of them are about
 stream of E-elements with K-keys defined by ***extractor function*** and
 then ordered by StreamOrder over K – these parameters and arguments are
 taken out to common class constructor (/apply method) and don’t emerge
 in the method declarations.
 
-def sort(distance: (E,E)=&gt;Boolean, bufSize: Int =
+def partSort(distance: (E,E)=&gt;Boolean, bufSize: Int =
 Int.*MaxValue*): Flow\[E, (E,Long), \_\]
 
 - sort the **fuzzy ordered stream** of data with limited buffer.
