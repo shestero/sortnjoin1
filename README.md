@@ -41,7 +41,7 @@ then ordered by StreamOrder over K – these parameters and arguments are
 taken out to common class constructor (/apply method) and don’t emerge
 in the method declarations.
 
-**def **sort(distance: (E,E)=&gt;Boolean, bufSize: Int =
+def sort(distance: (E,E)=&gt;Boolean, bufSize: Int =
 Int.*MaxValue*): Flow\[E, (E,Long), \_\]
 
 - sort the **fuzzy ordered stream** of data with limited buffer.
@@ -82,18 +82,18 @@ are no more than 10 minutes. Here the key values are timestamp, the
 distance function is that checks that two timestamps are more than 10
 minutes from each other.
 
-**def **checkException(): Flow\[E, (Option\[Exception\],E), \_\]
+def checkException(): Flow\[E, (Option\[Exception\],E), \_\]
 
 - check if stream are ordered. Zips the stream with Option of error
 indicator that is None if there is the order of signal the error if the
 order is violated.
 
-**def **checkBool(): Flow\[E, (Boolean,E), \_\]
+def checkBool(): Flow\[E, (Boolean,E), \_\]
 
 - the same as previous but zips with just boolean flags of error (true
 if order, false if it is violated).
 
-**def **assert(): Flow\[E, E, \_\]
+def assert(): Flow\[E, E, \_\]
 
 - throws the exception from ***checkException()*** above if the order of
 data is violated.
@@ -126,7 +126,7 @@ declarations of SortedJoin object/class.
 Note than all join operation over the key K preserve the output stream
 order as order of keys K.
 
-**def **fullJoin\[M\](combine: (M1,M2)=&gt;M):
+def fullJoin\[M\](combine: (M1,M2)=&gt;M):
 Source\[(K,(Seq\[E1\],Seq\[E2\])),M\]
 
 - group elements from both input streams using common keys.
@@ -134,7 +134,7 @@ Source\[(K,(Seq\[E1\],Seq\[E2\])),M\]
 The result comes with corresponding keys. If keys are not needed in the
 output their may be easy omitted using ***.map(\_.\_****2****)*** .
 
-**def **join\[M\](combine: (M1,M2)=&gt;M): Source\[(K,(E1,E2)),M\]
+def join\[M\](combine: (M1,M2)=&gt;M): Source\[(K,(E1,E2)),M\]
 
 - do **simple join** thats means to get a couples of elements from both
 input streams, if they have same key value.
@@ -142,7 +142,7 @@ input streams, if they have same key value.
 The result comes paired with keys. If keys are not needed in the output
 their may be easy omitted using ***.map(\_.\_****2****)*** .
 
-**def **leftJoin\[M\](combine: (M1,M2)=&gt;M):
+def leftJoin\[M\](combine: (M1,M2)=&gt;M):
 Source\[(K,(E1,Seq\[E2\])),M\]
 
 - do **left join**: for every element of the *first* stream provide a
