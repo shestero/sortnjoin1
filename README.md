@@ -1,4 +1,4 @@
-***Ordered stream and Joins ***
+***Ordered stream and Joins***
 
 In very different tasks we have not just stream (flows) of data, but
 ordered by some meanings streams. It may be naturally ordered by some id
