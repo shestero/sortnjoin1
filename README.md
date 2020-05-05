@@ -26,7 +26,7 @@ order of their keys. It contains:
 2.a) the definition **order over keys K** using standard
 ***Ordering\[K\]*** object;
 
-2.b) the **direction **of this order (ascending or descending) using
+2.b) the direction of this order (ascending or descending) using
 ***OrderDirection*** constans ASC or DESC (DESC reverts the order);
 
 2.c) the **unique flag** that asserts that keys should be unique, i.e.
