@@ -153,7 +153,7 @@ collection appears.
 The result comes paired with keys. If keys are not needed in the output
 their may be easy omitted using ***.map(\_.\_2)*** .
 
-**def **rightJoin\[M\](combine: (M1,M2)=&gt;M):
+def rightJoin\[M\](combine: (M1,M2)=&gt;M):
 Source\[(K,(Seq\[E1\],E2)),M\]
 
 - do **right join**: for every element of the *second* stream provide a
