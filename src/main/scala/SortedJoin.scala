@@ -9,14 +9,14 @@ import DoAfter._
 import Enrich._
 
 object SortedJoin {
-  def apply[E1,M1,E2,M2,K](st1: Source[E1,M1], extractor1: (E1)=>K,
-                           st2: Source[E2,M2], extractor2: (E2)=>K, order: StreamOrder[K])
+  def apply[E1,M1,E2,M2,K](st1: Source[E1,M1], keymaker1: E1=>K,
+                           st2: Source[E2,M2], keymaker2: E2=>K, order: StreamOrder[K])
                           (implicit ordering: Ordering[K], ec: ExecutionContext, mat: Materializer) =
-    new SortedJoin[E1,M1,E2,M2,K](st1,extractor1,st2,extractor2,order)(ordering,ec,mat)
+    new SortedJoin[E1,M1,E2,M2,K](st1,keymaker1,st2,keymaker2,order)(ordering,ec,mat)
 }
 
-class SortedJoin[E1,M1,E2,M2,K](st1: Source[E1,M1], extractor1: (E1)=>K,
-                                st2: Source[E2,M2], extractor2: (E2)=>K, order: StreamOrder[K])
+class SortedJoin[E1,M1,E2,M2,K](st1: Source[E1,M1], keymaker1: E1=>K,
+                                st2: Source[E2,M2], keymaker2: E2=>K, order: StreamOrder[K])
                                (implicit ordering: Ordering[K], ec: ExecutionContext, mat: Materializer)
 {
   protected def lowLevelJoin(q1: SinkQueueWithCancel[E1], q2: SinkQueueWithCancel[E2]): Source[(Option[K],(Option[E1],Option[E2])),NotUsed] =
@@ -28,7 +28,7 @@ class SortedJoin[E1,M1,E2,M2,K](st1: Source[E1,M1], extractor1: (E1)=>K,
           get1 <- o1.map(e1=>Future(Some(e1))).getOrElse(q1.pull().recover(_=>None)) // if (o1.isDefined) Future(o1) else q1.pull()
           get2 <- o2.map(e2=>Future(Some(e2))).getOrElse(q2.pull().recover(_=>None))
         } yield {
-          (get1.map(enrich(extractor1)),get2.map(enrich(extractor2))) match {
+          (get1.map(enrich(keymaker1)),get2.map(enrich(keymaker2))) match {
             case (Some((k1,e1)), Some((k2,e2))) =>
               val cmp = ordering.compare(k1,k2)
               if (cmp<0)

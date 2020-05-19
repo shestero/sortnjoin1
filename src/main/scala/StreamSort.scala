@@ -7,13 +7,13 @@ import scala.concurrent.{ExecutionContext, Future}
 import DoAfter._
 
 object StreamSort {
-  def apply[E,K]()(implicit extractor: (E)=>K, order: StreamOrder[K]) = new StreamSort[E,K](extractor,order)
+  def apply[E,K]()(implicit keymaker: E=>K, order: StreamOrder[K]) = new StreamSort[E,K](keymaker,order)
 }
 
-class StreamSort[E,K](extractor: (E)=>K, order: StreamOrder[K])
+class StreamSort[E,K](keymaker: E=>K, order: StreamOrder[K])
 {
-  implicit def ordering = new Ordering[E] {
-    override def compare(x: E, y: E): Int = order.comp(extractor)(x, y)
+  implicit def ordering: Ordering[E] = new Ordering[E] {
+    override def compare(x: E, y: E): Int = order.comp(keymaker)(x, y)
   }
 
   def fullSort(bufSize: Int = Int.MaxValue)(implicit mat: Materializer, ec: ExecutionContext): Flow[E, E, Future[Int]] = {
@@ -21,7 +21,7 @@ class StreamSort[E,K](extractor: (E)=>K, order: StreamOrder[K])
     val sorted = fseq.map(_.sorted(ordering))
     Flow.fromSinkAndSource(inp, Source.future(sorted).mapConcat(identity))
       .mapMaterializedValue(_ => sorted.map(_.size)) // - to return Future of length
-  } //.assert(extractor)
+  } //.assert(keymaker)
 
   // TODO: test
   def partSort(bufSize: Int): Flow[E, (E,Long), _] = partSort((_,_)=>false,bufSize)
@@ -43,7 +43,7 @@ class StreamSort[E,K](extractor: (E)=>K, order: StreamOrder[K])
         }
         immutable.List.from(overflow ++ it).toIterable
     } ++ Source.lazySource(()=>Source.fromIterator(()=>ss.iterator))
-  } //.via( assert(extractor) )
+  } //.via( assert(keymaker) )
 
   // TODO: calculate a minimal distance and/or minimal frame buffer size to sort the given stream
 
@@ -51,7 +51,7 @@ class StreamSort[E,K](extractor: (E)=>K, order: StreamOrder[K])
     var last: Option[E] = None
     Flow[E].map { e => // mapAsync(1)
       doAfter( ()=>
-        last.forall(le => order.comp(extractor)(le, e) match {
+        last.forall(le => order.comp(keymaker)(le, e) match {
           case 0 => !order.unique
           case i => i < 0
         }) -> e
@@ -65,7 +65,7 @@ class StreamSort[E,K](extractor: (E)=>K, order: StreamOrder[K])
     var last: Option[E] = None
     Flow[E].map { e => // mapAsync(1)
       doAfter( () =>
-        last.flatMap(le => order.comp(extractor)(le, e) match { // PartialFunction[(Int,order.unique),Exception]
+        last.flatMap(le => order.comp(keymaker)(le, e) match { // PartialFunction[(Int,order.unique),Exception]
           case i if i < 0 => None // ok
           case 0 => if (order.unique) Some(UniqueViolation) else None
           case i if i > 0 => Some(OrderViolation)
@@ -88,7 +88,7 @@ class StreamSort[E,K](extractor: (E)=>K, order: StreamOrder[K])
       e =>
         Seq(
           last match {
-            case Some(le) => order.comp(extractor)(le, e) match {
+            case Some(le) => order.comp(keymaker)(le, e) match {
               case i if i < 0 => doAfter( ()=>last, ()=>last=Some(e) )
               case 0 => if (order.unique) None else doAfter( ()=>last, ()=>last=Some(e) )
               case i if i > 0 => None
@@ -97,6 +97,6 @@ class StreamSort[E,K](extractor: (E)=>K, order: StreamOrder[K])
           }
         )
     }).collect { case Some(e) => e }
-  } // .assert(extractor)
+  } // .assert(keymaker)
 }
 

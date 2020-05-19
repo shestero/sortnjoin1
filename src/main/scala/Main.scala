@@ -22,7 +22,7 @@ object Main extends App {
   src.runWith( Sink.seq ).foreach( r=>println("Src1="+r) )
   src.runWith( Sink.seq ).foreach( r=>println("Src2="+r) )
 
-  implicit val extractor: (Int)=>Int = identity[Int]
+  implicit val keymaker: Int=>Int = identity[Int]
   implicit val streamOrder = StreamOrder[Int]()
 
   val sorted1 = src.via( StreamSort().fullSort() )

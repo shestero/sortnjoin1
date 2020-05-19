@@ -11,12 +11,12 @@ ordered elements.
 Here “Ordered” means the sequence of element of type E obey the order,
 specifying by following:
 
-1\) pure key **extractor function** E=&gt;K that extract some kind of
+1\) pure key **keymaker function** E=&gt;K that extract some kind of
 “key” from data elements of type E. In most cases with simple types E
 the extract function is just *identical* function: f(x)=x.
 
 If the E represent a kind of a record of database table or a case class
-object the extractor function may fetch a needed key field, e.g:
+object the keymaker function may fetch a needed key field, e.g:
 x=&gt;x.id . In other cases it may return a time stamp of an event
 record object.
 
@@ -36,7 +36,7 @@ no keys are repeating.
 
 The StreamSort object/class contains the collection of useful basic
 method with such ***ordered ****streams***. As all of them are about
-stream of E-elements with K-keys defined by ***extractor function*** and
+stream of E-elements with K-keys defined by ***keymaker function*** and
 then ordered by StreamOrder over K – these parameters and arguments are
 taken out to common class constructor (/apply method) and don’t emerge
 in the method declarations.
@@ -63,7 +63,7 @@ Note:
 
 1\) If the you have the distance function given over the ***key
 values***, i.e as (K,K)=&gt;Boolean it can be easily adduced to
-(E,E)=&gt;Boolean combining with ***extractor function*** (E)=&gt;K.
+(E,E)=&gt;Boolean combining with ***keymaker function*** (E)=&gt;K.
 
 2\) If you need to limit buffer frame by time the source stream may be
 zipped with timestamps.
@@ -119,7 +119,7 @@ be combined as usual in Akka (i.e using Keep) into result M materialized
 value.
 
 As with StreamSort object/class the common parameters (E1,M1,E2,M2,K)
-and arguments (source streams, extractor functions and others) are taken
+and arguments (source streams, keymaker functions and others) are taken
 out to common constructor (/apply method) and don’t emerge in the method
 declarations of SortedJoin object/class.
 
