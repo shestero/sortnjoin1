@@ -35,7 +35,7 @@ no keys are repeating.
 ***The functions from ****StreamSort*****.**
 
 The StreamSort object/class contains the collection of useful basic
-method with such ***ordered ****streams***. As all of them are about
+method with such ***ordered streams***. As all of them are about
 stream of E-elements with K-keys defined by ***keymaker function*** and
 then ordered by StreamOrder over K – these parameters and arguments are
 taken out to common class constructor (/apply method) and don’t emerge
@@ -63,7 +63,7 @@ Note:
 
 1\) If the you have the distance function given over the ***key
 values***, i.e as (K,K)=&gt;Boolean it can be easily adduced to
-(E,E)=&gt;Boolean combining with ***keymaker function*** (E)=&gt;K.
+(E,E)=&gt;Boolean combining with ***extractor function*** (E)=&gt;K.
 
 2\) If you need to limit buffer frame by time the source stream may be
 zipped with timestamps.
@@ -119,7 +119,7 @@ be combined as usual in Akka (i.e using Keep) into result M materialized
 value.
 
 As with StreamSort object/class the common parameters (E1,M1,E2,M2,K)
-and arguments (source streams, keymaker functions and others) are taken
+and arguments (source streams, extractor functions and others) are taken
 out to common constructor (/apply method) and don’t emerge in the method
 declarations of SortedJoin object/class.
 
